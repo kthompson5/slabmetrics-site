@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "https://www.slabmetrics.com/(.*)", "destination": "https://slabmetrics.com/$1", "status": 301 }
+  ]
+}
