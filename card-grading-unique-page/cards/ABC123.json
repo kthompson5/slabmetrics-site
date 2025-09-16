@@ -1,0 +1,22 @@
+{
+  "id": "ABC123",
+  "player": "Tarik Skubal",
+  "set": "2020 Donruss",
+  "number": "RC #257",
+  "variant": "Holo Purple",
+  "grade": 9.5,
+  "subgrades": {
+    "centering": 9,
+    "corners": 9.5,
+    "edges": 10,
+    "surface": 9.5
+  },
+  "images": {
+    "front": "/cards/ABC123-front.jpg",
+    "back": "/cards/ABC123-back.jpg"
+  },
+  "notes": "Clean edges; faint print line under light.",
+  "graded_at": "2025-09-10",
+  "comp_trend": [120, 125, 118, 130, 142, 139, 150],
+  "pdf_report": null
+}
