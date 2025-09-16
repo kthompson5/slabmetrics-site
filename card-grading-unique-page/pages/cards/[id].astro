@@ -1,0 +1,70 @@
+---
+import CardLayout from "../../layouts/CardLayout.astro";
+import GradeGauge from "../../components/GradeGauge.tsx";
+import SubgradeBars from "../../components/SubgradeBars.tsx";
+import TrendSpark from "../../components/TrendSpark.tsx";
+import CardFlip from "../../components/CardFlip.tsx";
+import { getAllCards, getCardById } from "../../utils/paths";
+import QRCode from "qrcode";
+
+export async function getStaticPaths() {
+  const cards = getAllCards();
+  return cards.map((c) => ({ params: { id: c.id }, props: { card: c } }));
+}
+
+const { id } = Astro.params;
+let card = Astro.props.card;
+if (!card) card = getCardById(id!);
+
+if (!card) {
+  throw new Error(`Card not found: ${id}`);
+}
+
+const site = Astro.site?.href ?? 'https://slabmetrics.com';
+const permalink = `${site}cards/${card.id}`;
+const qrDataUrl = await QRCode.toDataURL(permalink, { margin: 1, scale: 4 });
+---
+
+<CardLayout card={card} site={site}>
+  <header class="wrap">
+    <div class="hero">{card.player}</div>
+    <div class="sub">{card.set}{card.variant ? ` — ${card.variant}` : ''}{card.number ? ` · ${card.number}` : ''}</div>
+  </header>
+
+  <main class="wrap grid">
+    <section class="block">
+      <CardFlip front={card.images.front} back={card.images.back} client:load />
+      <div class="meta" style="margin-top:16px">
+        <span class="pill">ID: {card.id}</span>
+        <span class="pill">Grade: {card.grade}</span>
+        {card.graded_at && <span class="pill">Graded: {card.graded_at}</span>}
+      </div>
+    </section>
+
+    <aside class="block">
+      <GradeGauge value={card.grade} label="Overall" client:load />
+      {card.subgrades && <div style="margin-top:16px"><SubgradeBars subgrades={card.subgrades} client:visible /></div>}
+      {card.comp_trend && <div style="margin-top:16px"><TrendSpark values={card.comp_trend} label="Comp trend" client:load /></div>}
+    </aside>
+
+    <section class="block">
+      <h2 style="margin:0 0 8px 0">Notes</h2>
+      <p class="muted">{card.notes ?? '—'}</p>
+      <div class="kvs" style="margin-top:12px">
+        {card.pdf_report && <div><a href={card.pdf_report} target="_blank" rel="noopener">PDF Report</a></div>}
+      </div>
+    </section>
+
+    <section class="block">
+      <h2 style="margin:0 0 8px 0">Verification</h2>
+      <div class="qrwrap">
+        <img src={qrDataUrl} alt="QR code" width="120" height="120" style="border-radius:8px;border:1px solid rgb(0 0 0 / 10%)"/>
+        <div>
+          <div class="muted">Permalink</div>
+          <a href={permalink}>{permalink}</a>
+          <div style="margin-top:8px;font-size:12px;opacity:.8">Scan the QR on the slab to land here.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</CardLayout>
