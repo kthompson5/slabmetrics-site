@@ -1,0 +1,18 @@
+---
+import { getAllCards } from "../utils/paths";
+const cards = getAllCards();
+---
+
+<html lang="en">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><title>SlabMetrics Cards</title></head>
+  <body style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin:0">
+    <main style="max-width:980px;margin:0 auto;padding:24px">
+      <h1>SlabMetrics Cards</h1>
+      <ul>
+        {cards.map(c => (
+          <li><a href={`/cards/${c.id}/`}>{c.player} — {c.set} (Grade {c.grade})</a></li>
+        ))}
+      </ul>
+    </main>
+  </body>
+</html>
