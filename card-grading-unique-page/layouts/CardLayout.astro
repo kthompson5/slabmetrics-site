@@ -1,0 +1,54 @@
+---
+import { makeOgMeta, productJsonLd } from "../utils/meta";
+const { card, site } = Astro.props;
+const og = makeOgMeta(card, site);
+const jsonLd = productJsonLd(card, site);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{og.title}</title>
+    <meta name="description" content={og.desc} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={og.title} />
+    <meta property="og:description" content={og.desc} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={og.url} />
+    <meta property="og:image" content={og.image} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={og.title} />
+    <meta name="twitter:description" content={og.desc} />
+    <meta name="twitter:image" content={og.image} />
+
+    <script type="application/ld+json">
+      {JSON.stringify(jsonLd)}
+    </script>
+
+    <style>
+      :root { color-scheme: light dark; }
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin:0; }
+      header { padding: 24px; }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
+      .grid { display:grid; gap:24px; grid-template-columns: 1fr; }
+      @media (min-width: 960px) { .grid { grid-template-columns: 1.2fr 1fr; } }
+      .block { background: Color-mix(in oklab, Canvas 95%, transparent); border: 1px solid rgb(0 0 0 / 8%); border-radius: 14px; padding: 16px; }
+      .muted { opacity: .8; font-size: 14px; }
+      .hero { font-size: clamp(20px, 2.4vw + 12px, 34px); font-weight: 800; line-height: 1.08; }
+      .sub { font-size: 16px; opacity: .8; }
+      .row { display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+      .qrwrap { display:flex; gap:16px; align-items:center; }
+      .pill { font-size: 12px; border-radius: 999px; padding: 6px 10px; border:1px solid rgb(0 0 0 / 12%); }
+      .meta { display:flex; gap:12px; flex-wrap:wrap; }
+      .kvs { display:grid; gap:8px; }
+      .kvs div { font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
