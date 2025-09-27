@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script>document.documentElement.classList.add('js');</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SlabMetrics — Independent digital suggested grade & report cards</title>
+  <meta name="description" content="SlabMetrics provides an independent digital suggested grade (Front 80% / Back 20%) with transparent subgrades and pro-style report cards. Not affiliated with PSA, SGC, Beckett, or CGC." />
+  <link rel="icon" href="/assets/favicon.svg" />
+  <meta property="og:title" content="SlabMetrics — Digital Suggested Grade" />
+  <meta property="og:description" content="Independent digital suggested grade with transparent subgrades and pro-style report cards." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://slabmetrics.com/" />
+  <style>
+    :root{
+      --ink:#0a0a0a;--muted:#6b7280;--line:#e5e7eb;--brand:#16a34a;--brand-ink:#065f46;
+      --bg:#ffffff;--bg-soft:#f8fafc;--ring:#dbeafe;--shadow:0 6px 24px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box} html,body{margin:0;padding:0;background:#fff;color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    a{color:inherit;text-decoration:none} a:hover{color:var(--brand)}
+    .container{max-width:1120px;margin:0 auto;padding:0 16px}
+    .site-header{border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:50}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.02em}
+    .brand .logo{width:56px;height:auto}
+    .nav{display:flex;gap:14px}
+    .nav a{padding:10px 12px;border-radius:8px}
+    .nav a:hover{background:#f9fafb}
+    .bar{height:10px;background:var(--line);border-radius:999px;overflow:hidden}
+    .bar>span{display:block;height:100%;width:0;background:var(--brand);border-radius:inherit;transition:width .7s cubic-bezier(.2,.7,0,1)}
+    .btn{display:inline-block;border:1px solid var(--line);padding:12px 16px;border-radius:12px}
+    .btn-primary{background:var(--brand);border-color:var(--brand);color:#fff}
+    .btn-primary:hover{filter:brightness(.95)}
+    .btn-ghost:hover{background:#fff}
+    .hero{background:var(--bg);padding:40px 0;border-bottom:1px solid var(--line)}
+    .hero-grid{display:grid;grid-template-columns:1fr;gap:24px;align-items:center}
+    @media(min-width:860px){.hero-grid{grid-template-columns:1.1fr .9fr}}
+    .hero h1{font-size:clamp(28px,4vw,40px);line-height:1.1;margin:0}
+    .hero p{color:var(--muted);line-height:1.7;margin:14px 0 0}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px}
+    .soft-frame{border-radius:16px;border:1px solid #eef2ff;box-shadow:0 8px 28px rgba(30,58,138,.06), inset 0 0 0 1px #eef2ff;background:linear-gradient(180deg,#fff, #fbfdff)}
+    .grid-2{display:grid;grid-template-columns:1fr;gap:18px}
+    @media(min-width:900px){.grid-2{grid-template-columns:1.1fr .9fr}}
+    .reveal{opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.is-visible{opacity:1;transform:none}
+    /* Suggested Grade Preview */
+    .grade-wrap{display:grid;grid-template-columns:1fr;gap:20px}
+    @media(min-width:760px){.grade-wrap{grid-template-columns:1fr 1fr}}
+    .overall{display:flex;flex-direction:column;align-items:center;gap:10px}
+    .circle{--angle:0%;width:160px;height:160px;border-radius:50%;
+      background:conic-gradient(var(--brand) var(--angle), #eef2ff var(--angle));
+      display:grid;place-items:center;border:6px solid #f1f5f9}
+    .circle-inner{font-size:42px;font-weight:800}
+    .circle-label{font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+    .subs{margin-top:8px;display:grid;grid-template-columns:1fr;gap:10px}
+    .subs h4{margin:0 0 6px 0;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    .subrow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+    .subrow .name{font-weight:600}
+    .subrow .val{font-variant-numeric:tabular-nums;color:#111}
+    .badge-block{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+    .slab-badge{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:14px;padding:10px 14px;min-width:240px}
+    .slab-left{display:flex;flex-direction:column;line-height:1.1}
+    .slab-tier{font-weight:800;letter-spacing:.05em}
+    .slab-sub{font-size:12px;color:var(--muted)}
+    .slab-grade{margin-left:auto;font-size:32px;font-weight:900}
+    .tiny{font-size:12px;color:var(--muted)}
+    /* How it Works */
+    .tiles{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:760px){.tiles{grid-template-columns:repeat(4,1fr)}}
+    .tile{border:1px solid var(--line);border-radius:14px;padding:14px}
+    .tile h3{margin:0 0 6px 0;font-size:16px}
+    .tile p{margin:0;color:var(--muted);font-size:14px}
+    /* Card Experience */
+    .viewer{display:grid;grid-template-columns:1fr;gap:16px;align-items:center}
+    @media(min-width:900px){.viewer{grid-template-columns:1fr 1fr}}
+    .viewer-frame{padding:14px}
+    .flip-wrap{position:relative;display:grid;place-items:center;cursor:pointer}
+    .flip-wrap .demo{width:100%;max-width:420px;border-radius:12px;display:block}
+    .hint{margin:8px 0 0 0;color:var(--muted);font-size:12px;text-align:center}
+    .footer{border-top:1px solid var(--line);padding:30px 0;background:#fff;margin-top:24px}
+    .footer-grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:860px){.footer-grid{grid-template-columns:1.4fr 1fr 1fr}}
+    /* Mobile nav */
+    .mobile-toggle{display:none}
+    @media(max-width:860px){
+      .nav{display:none}
+      .mobile-toggle{display:inline-flex;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+      #mobileNav{display:none;border-top:1px solid var(--line)}
+      #mobileNav.open{display:block}
+      #mobileNav a{display:block;padding:12px 16px}
+    }
+    /* Accessibility focus */
+    :focus-visible{outline:3px solid #a7f3d0;outline-offset:3px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;">
+      <a href="/index.html" class="brand">
+        <img src="/logo.png" alt="SlabMetrics" class="logo" />
+        <span>SLAB<span style="color:var(--brand)">METRICS</span></span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="/services.html">Services & Pricing</a>
+        <a href="/submit.html">Submit Cards</a>
+        <a href="/101.html">Card Grading 101</a>
+        <a href="/big4.html">Big 4</a>
+        <a href="/niche.html">Emerging</a>
+        <a href="/grading-standards.html" title="How we calculate the suggested grade">Grading Standards</a>
+      </nav>
+      <button id="menuBtn" class="mobile-toggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Toggle menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+    <nav id="mobileNav" aria-label="Mobile" class="">
+      <div class="container">
+        <a href="/services.html">Services & Pricing</a>
+        <a href="/submit.html">Submit Cards</a>
+        <a href="/101.html">Card Grading 101</a>
+        <a href="/big4.html">Big 4</a>
+        <a href="/niche.html">Emerging</a>
+        <a href="/grading-standards.html">Grading Standards</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <h1>Suggested Card Grades for Collectors</h1>
+        <p>
+          Independent <strong>Suggested Grades</strong> and pro-style <strong>Report Cards</strong>—great for personal collections, transparent eBay listings, or pre-screening before submitting to PSA, Beckett, SGC, or CGC. We are not a grading company; we’re a transparency service.
+          <br><br>
+          New: our <strong>digital suggested grade</strong> (SM) weighs <strong>Front 80%</strong> / <strong>Back 20%</strong> across <em>Surface, Centering, Edges, Corners</em> (1–10).
+        </p>
+        <div class="cta-row">
+          <a href="/submit.html" class="btn btn-primary">Get a Suggested Grade</a>
+          <a href="/services.html" class="btn btn-ghost">See Pricing</a>
+          <a href="/grading-standards.html" class="btn" aria-label="How we calculate the Suggested Grade">How We Calculate the Suggested Grade →</a>
+        </div>
+        <p class="tiny" style="margin-top:8px;">Not affiliated with PSA, SGC, Beckett, or CGC.</p>
+      </div>
+      <div class="card">
+        <div class="font-semibold" style="font-weight:700;">What you receive</div>
+        <ul style="margin:10px 0 0 18px; color:var(--muted); line-height:1.7;">
+          <li>PDF Report Card with subgrades + notes</li>
+          <li>Standard Service: MagPro slab with custom label</li>
+          <li>Value Service: Report Card only (returned in Card Saver)</li>
+        </ul>
+        <img src="/assets/logo.svg" alt="Sample" style="margin:16px auto 4px; display:block; max-width:180px; opacity:.85" />
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW: Suggested Grade Preview (above the fold) -->
+  <section class="reveal" style="padding:28px 0;">
+    <div class="container soft-frame" style="padding:18px;">
+      <div class="grade-wrap">
+        <!-- LEFT: Circle + bars -->
+        <div>
+          <div class="overall" data-circle data-angle="0">
+            <div class="circle"><div class="circle-inner" data-score-out>0.00</div></div>
+            <div class="circle-label">SlabMetrics Suggested Grade</div>
+          </div>
+
+          <div class="subs">
+            <h4>Front (80%)</h4>
+            <div class="subrow">
+              <div class="name">Surface</div>
+              <div class="bar"><span data-bar="f_surface"></span></div>
+              <div class="val" data-val="f_surface">—</div>
+            </div>
+            <div class="subrow">
+              <div class="name">Centering</div>
+              <div class="bar"><span data-bar="f_centering"></span></div>
+              <div class="val" data-val="f_centering">—</div>
+            </div>
+            <div class="subrow">
+              <div class="name">Corners (avg)</div>
+              <div class="bar"><span data-bar="f_corners"></span></div>
+              <div class="val" data-val="f_corners">—</div>
+            </div>
+            <div class="subrow">
+              <div class="name">Edges (avg)</div>
+              <div class="bar"><span data-bar="f_edges"></span></div>
+              <div class="val" data-val="f_edges">—</div>
+            </div>
+
+            <h4 style="margin-top:8px;">Back (20%)</h4>
+            <div class="subrow">
+              <div class="name">Surface</div>
+              <div class="bar"><span data-bar="b_surface"></span></div>
+              <div class="val" data-val="b_surface">—</div>
+            </div>
+            <div class="subrow">
+              <div class="name">Centering</div>
+              <div class="bar"><span data-bar="b_centering"></span></div>
+              <div class="val" data-val="b_centering">—</div>
+            </div>
+            <div class="subrow">
+              <div class="name">Corners (avg)</div>
+              <div class="bar"><span data-bar="b_corners"></span></div>
+              <div class="val" data-val="b_corners">—</div>
+            </div>
+            <div class="subrow">
+              <div class="name">Edges (avg)</div>
+              <div class="bar"><span data-bar="b_edges"></span></div>
+              <div class="val" data-val="b_edges">—</div>
+            </div>
+
+            <p class="tiny" style="margin-top:6px;">SM = 0.80 × Front + 0.20 × Back; values shown to two decimals; scores &gt; 9.75 display as 10.</p>
+          </div>
+        </div>
+
+        <!-- RIGHT: Industry badge w/ disclaimer -->
+        <div class="badge-block">
+          <div class="slab-badge" data-slabbadge aria-live="polite">
+            <div class="slab-left">
+              <div class="slab-tier" data-tier-name>—</div>
+              <div class="slab-sub" data-tier-sub></div>
+            </div>
+            <div class="slab-grade" data-tier-grade>—</div>
+          </div>
+          <div class="tiny" style="text-align:center;">
+            <em>SlabMetrics suggested</em> overall score equates to this score.
+          </div>
+          <a href="/grading-standards.html" class="btn" style="margin-top:6px;">See full standards →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS (reuse bones; updated copy) -->
+  <section class="reveal" style="padding:26px 0;">
+    <div class="container">
+      <h2 style="margin:0 0 10px 0;">How It’s Different</h2>
+      <p style="color:var(--muted);margin:0 0 14px 0">We provide clarity, not encapsulation or authentication. Our Suggested Grades are independent opinions using a consistent rubric.</p>
+
+      <div class="tiles">
+        <div class="tile">
+          <h3>Surface</h3>
+          <p>Scratches, print lines, gloss, stains, dimples, roller marks.</p>
+        </div>
+        <div class="tile">
+          <h3>Centering</h3>
+          <p>Front and back ratios; borders and design guides considered.</p>
+        </div>
+        <div class="tile">
+          <h3>Edges</h3>
+          <p>Average of all four edges; chipping, fray, factory cuts.</p>
+        </div>
+        <div class="tile">
+          <h3>Corners</h3>
+          <p>Average of all four corners; sharpness, roll, touches.</p>
+        </div>
+      </div>
+
+      <p class="tiny" style="margin-top:10px">
+        Per-side averages computed for Front and Back. Final SM = 0.80 × Front + 0.20 × Back (two-decimal display; &gt; 9.75 → 10).
+        <a href="/grading-standards.html">See full standards →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- CARD EXPERIENCE PREVIEW -->
+  <section class="reveal" style="padding:6px 0 28px 0;">
+    <div class="container viewer">
+      <div class="viewer-frame soft-frame">
+        <div class="flip-wrap" title="Static preview">
+          <img class="demo" src="/assets/sample-front.jpg" alt="Sample card front preview" />
+          <p class="hint">Preview: front/back viewer in our card pages uses this same soft border.</p>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0;">Card Report Pages</h3>
+        <p style="color:var(--muted);margin:0 0 12px 0;">
+          Each card gets a clean page with subgrades, notes, centering visuals, and a badge equivalency. Share it in listings or keep for your PC.
+        </p>
+        <div class="card" style="display:flex;flex-direction:column;gap:10px;">
+          <a class="btn btn-primary" href="/cards/example-00001.html" rel="noopener">See a Live Card →</a>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <a class="btn" href="https://www.ebay.com" target="_blank" rel="noopener">View eBay Comps</a>
+            <a class="btn" href="/index.html">← Back to All Cards</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section class="reveal" style="padding:8px 0 24px 0;">
+    <div class="container grid-2">
+      <div class="card">
+        <div style="font-weight:700">Standard</div>
+        <p style="color:var(--muted);margin:6px 0 10px 0;">Report Card + MagPro slab with custom label.</p>
+        <a href="/services.html#standard" class="btn">Details →</a>
+      </div>
+      <div class="card">
+        <div style="font-weight:700">Value</div>
+        <p style="color:var(--muted);margin:6px 0 10px 0;">Report Card only. Returned in Card Saver.</p>
+        <a href="/services.html#value" class="btn">Details →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-grid" style="font-size:14px;">
+      <div>
+        <div style="font-weight:800">SlabMetrics</div>
+        <p style="color:var(--muted);margin:8px 0 0 0;">
+          Independent <em>digital suggested grade</em> & Report Cards for transparency.<br/>Not affiliated with PSA, SGC, Beckett, or CGC.
+        </p>
+      </div>
+      <div>
+        <div style="font-weight:700">Quick Links</div>
+        <ul style="margin:8px 0 0 18px; color:var(--muted); line-height:1.8;">
+          <li><a href="/services.html">Services & Pricing</a></li>
+          <li><a href="/submit.html">Submit Cards</a></li>
+          <li><a href="/terms.html">Terms of Service</a></li>
+          <li><a href="/privacy.html">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-weight:700">Contact</div>
+        <p style="color:var(--muted);margin:8px 0 0 0;">Email: hello@slabmetrics.com</p>
+        <p style="color:var(--muted);margin:2px 0 0 0;">Ship-to address provided after payment.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Minimal data + JS -->
+  <script>
+    // Mobile menu
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const nav = document.getElementById('mobileNav');
+      btn?.addEventListener('click', () => {
+        const open = nav.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+      });
+    })();
+
+    // Demo data for Suggested Grade Preview (can be swapped to live later)
+    const SM_PREVIEW = {
+      f_surface: 9.6, f_centering: 9.2, f_corners: 9.4, f_edges: 9.3,
+      b_surface: 9.1, b_centering: 9.0, b_corners: 9.2, b_edges: 9.0
+    };
+
+    function avgFront(d){return (d.f_surface + d.f_centering + d.f_corners + d.f_edges)/4}
+    function avgBack(d){return (d.b_surface + d.b_centering + d.b_corners + d.b_edges)/4}
+    function smScore(d){const F=avgFront(d), B=avgBack(d); let sm=0.80*F+0.20*B; return sm}
+    function displayScore(x){return (x>9.75?10:x).toFixed(2)}
+
+    // Animate circle
+    function animateCircleAngle(el, targetPct, duration = 900){
+      try{
+        if (!el) return;
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const startPct = parseFloat(getComputedStyle(el).getPropertyValue('--angle')) || 0;
+        const endPct = Math.max(0, Math.min(100, targetPct));
+        if (reduce) { el.style.setProperty('--angle', endPct + '%'); return; }
+        const start = performance.now(), ease = t => 1 - Math.pow(1 - t, 3);
+        (function frame(now){
+          const t = Math.min(1, (now - start) / duration);
+          const v = startPct + (endPct - startPct) * ease(t);
+          el.style.setProperty('--angle', v.toFixed(2) + '%');
+          if (t < 1) requestAnimationFrame(frame);
+        })(start);
+      }catch(e){ console.error('animateCircleAngle', e); }
+    }
+
+    // Reveal on view
+    (function(){
+      const revs = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)){revs.forEach(el=>el.classList.add('is-visible'));return;}
+      const io = new IntersectionObserver((ents)=>{
+        ents.forEach(e=>{
+          if(e.isIntersecting){e.target.classList.add('is-visible');}
+        });
+      },{threshold:.22});
+      revs.forEach(el=>io.observe(el));
+    })();
+
+    // Hydrate preview
+    (function(){
+      const d = SM_PREVIEW;
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const bars = ['f_surface','f_centering','f_corners','f_edges','b_surface','b_centering','b_corners','b_edges'];
+      bars.forEach(k=>{
+        const bar = document.querySelector('[data-bar="'+k+'"]');
+        const val = document.querySelector('[data-val="'+k+'"]');
+        if (bar){
+          const pct = Math.max(0, Math.min(100, (d[k]||0)*10));
+          if (reduce) bar.style.width = pct + '%';
+          else requestAnimationFrame(()=>{ bar.style.width = pct + '%'; });
+        }
+        if (val) val.textContent = (d[k]||0).toFixed(1);
+      });
+
+      const scoreRaw = smScore(d);
+      const scoreDisplay = displayScore(scoreRaw);
+      const scoreOut = document.querySelector('[data-score-out]');
+      if (scoreOut) scoreOut.textContent = scoreDisplay;
+
+      // Circle fill (0..10 => 0..100%)
+      const circle = document.querySelector('.circle');
+      if (circle){
+        const pct = Math.min(100, (parseFloat(scoreDisplay) || 0) * 10);
+        animateCircleAngle(circle, pct, 900);
+      }
+
+      // Badge mapping (same bin rules as cards-page)
+      function binVal(v){
+        if (v >= 9.75) return 10.0;
+        if (v >= 9.25) return 9.5;
+        if (v >= 8.75) return 9.0;
+        if (v >= 8.25) return 8.5;
+        if (v >= 7.50) return 8.0;
+        if (v >= 6.50) return 7.0;
+        if (v >= 5.50) return 6.0;
+        if (v >= 4.50) return 5.0;
+        if (v >= 3.50) return 4.0;
+        if (v >= 2.50) return 3.0;
+        if (v >= 1.50) return 2.0;
+        return 1.0;
+      }
+      const NAMES = {
+        10.0:{tier:'APEX',sub:'GEM MINT',base:'10'},
+        9.5:{tier:'ELITE',sub:'MINT+',base:'9.5'},
+        9.0:{tier:'MINT',sub:'',base:'9'},
+        8.5:{tier:'STRONG',sub:'',base:'8.5'},
+        8.0:{tier:'SOLID',sub:'NM-MT',base:'8'},
+        7.0:{tier:'COLLECTOR',sub:'NM',base:'7'},
+        6.0:{tier:'PLAYABLE',sub:'EX-MT',base:'6'},
+        5.0:{tier:'CLASSIC',sub:'EX',base:'5'},
+        4.0:{tier:'VINTAGE',sub:'VG-EX',base:'4'},
+        3.0:{tier:'WORN',sub:'VG',base:'3'},
+        2.0:{tier:'POOR+',sub:'',base:'2'},
+        1.0:{tier:'POOR',sub:'',base:'1'}
+      };
+      const badge = document.querySelector('[data-slabbadge]');
+      if (badge){
+        const bin = binVal(scoreRaw);
+        const meta = NAMES[bin] || {tier:'—',sub:'',base:'—'};
+        const nameEl = badge.querySelector('[data-tier-name]');
+        const subEl  = badge.querySelector('[data-tier-sub]');
+        const numEl  = badge.querySelector('[data-tier-grade]');
+        if (nameEl) nameEl.textContent = meta.tier;
+        if (subEl)  subEl.textContent  = meta.sub || '';
+        if (numEl)  numEl.textContent  = meta.base;
+      }
+    })();
+  </script>
+</body>
+</html>
